@@ -23,10 +23,10 @@ use \FirePHP as FirePHP;
  */
 class Logger extends AbstractLogger
 {
-	protected $fireBug = null;
+    protected $fireBug = null;
     protected $logs    = array();
 
-    
+
     /**
      * Convert the message and context into a string
      *
@@ -84,7 +84,7 @@ class Logger extends AbstractLogger
         return $string;
     }
 
-	/**
+    /**
      * Logs with an arbitrary level.
      *
      * @param  mixed $level
@@ -95,40 +95,40 @@ class Logger extends AbstractLogger
      */
     public function log($level, $message, array $context = array())
     {
-    	if ($this->fireBug == null)
-    	{
-    		$this->fireBug = FirePHP::getInstance(true);
-    	}
+        if ($this->fireBug == null)
+        {
+            $this->fireBug = FirePHP::getInstance(true);
+        }
 
         $message = $this->formatMessage($message, $context);
 
 
-    	switch ($level)
-    	{
-    		case LogLevel::EMERGENCY:
-    		case LogLevel::ALERT:
-		    case LogLevel::CRITICAL:
-		    case LogLevel::ERROR:
-		    	$method = 'error';
+        switch ($level)
+        {
+            case LogLevel::EMERGENCY:
+            case LogLevel::ALERT:
+            case LogLevel::CRITICAL:
+            case LogLevel::ERROR:
+                $method = 'error';
 
                 break;
 
-		    case LogLevel::WARNING:
-		    	$method = 'warn';
+            case LogLevel::WARNING:
+                $method = 'warn';
                 break;
 
-		    case LogLevel::NOTICE:
-		    case LogLevel::INFO:
+            case LogLevel::NOTICE:
+            case LogLevel::INFO:
                 $method = 'info';
                 break;
 
-		    case LogLevel::DEBUG:
+            case LogLevel::DEBUG:
                 $method = 'log';
                 break;
 
             default:
                 throw new InvalidArgumentException('Invalid Log Level Specified.');
-    	}
+        }
 
         $this->logs[] = $level . ' ' . $message;
         if (headers_sent())
