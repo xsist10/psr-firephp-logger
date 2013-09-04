@@ -1,4 +1,11 @@
 <?php
+/**
+ * FirePHP PSR-3 Logger System
+ *
+ * @package xsist10/psr-firephp-logger
+ * @license Apache 2.0
+ * @author  Thomas Shone <xsist10@gmail.com>
+ */
 
 namespace Xsist10\PsrFirePhpLogger;
 
@@ -7,6 +14,13 @@ use Psr\Log\LogLevel;
 use Psr\Log\InvalidArgumentException;
 use \FirePHP as FirePHP;
 
+/**
+ * FirePHP PSR-3 Logger
+ *
+ * @package xsist10/psr-firephp-logger
+ * @license Apache 2.0
+ * @author  Thomas Shone <xsist10@gmail.com>
+ */
 class Logger extends AbstractLogger
 {
 	protected $fireBug = null;
@@ -14,78 +28,57 @@ class Logger extends AbstractLogger
 
     
     /**
-     * Fetch the message to log
-     *
-     * The fetchMessage() method is used internally to interpolate the
-     * message $pattern passed to the log() method with the data given
-     * in the $context array.
+     * Convert the message and context into a string
      *
      * @param string $pattern The message pattern
-     * @param array $context The message context
+     * @param array  $context The message context
      *
      * @return string
-     * The interpolated log message is returned on success
      */
-    private function fetchMessage($pattern, array $context = array())
+    private function formatMessage($raw, array $context = array())
     {
         $values = array();
-
-        foreach ($context as $key => $value) {
-            $values["{{$key}}"] = $this->fetchString($value);
+        foreach ($context as $key => $value)
+        {
+            $values["{{$key}}"] = $this->convertToString($value);
         }
 
-        $pattern = $this->fetchString($pattern);
+        $pattern = $this->convertToString($raw);
         $message = strtr($pattern, $values);
         return $message;
     }
 
     /**
-     * Fetch a values string representation
-     *
-     * The fetchString() method is used internally to convert the given
-     * $value into its string representation.
+     * Convert a mixed variable into a string
      *
      * @param mixed $value The value to convert
      *
      * @return string
-     * The $value's string representation is returned on success
      */
-    private function fetchString($value)
+    private function convertToString($value)
     {
-        if (is_scalar($value)) {
-            $string = (string) $value;
+        if (is_scalar($value))
+        {
+            $string = (string)$value;
         }
-        else if (is_null($value)) {
+        else if (is_null($value))
+        {
             $string = "NULL";
         }
-        else if (is_object($value)) {
-            $string = $this->fetchStringFromObject($value);
+        else if (is_object($value))
+        {
+            if (is_callable(array($value, "__toString")))
+            {
+                $string = (string)$value;
+            }
+            else
+            {
+                $string = get_class($value);
+            }
         }
-        else {
+        else
+        {
             $string = gettype($value);
-        }
-
-        return $string;
-    }
-
-    /**
-     * Fetch an objects string representation
-     *
-     * The fetchStringFromObject() method is used internally to convert
-     * the given $object into its string representation.
-     *
-     * @param object $object The object to convert
-     *
-     * @return string
-     * The $object's string representation is returned on success
-     */
-    private function fetchStringFromObject($object)
-    {
-        if (is_callable(array($object, "__toString"))) {
-            $string = (string) $object;
-        }
-        else {
-            $string = get_class($object);
         }
 
         return $string;
@@ -94,9 +87,10 @@ class Logger extends AbstractLogger
 	/**
      * Logs with an arbitrary level.
      *
-     * @param mixed $level
-     * @param string $message
-     * @param array $context
+     * @param  mixed $level
+     * @param  string $message
+     * @param  array $context
+     *
      * @return null
      */
     public function log($level, $message, array $context = array())
@@ -106,7 +100,7 @@ class Logger extends AbstractLogger
     		$this->fireBug = FirePHP::getInstance(true);
     	}
 
-        $message = $this->fetchMessage($message, $context);
+        $message = $this->formatMessage($message, $context);
 
 
     	switch ($level)
