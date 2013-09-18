@@ -1,7 +1,7 @@
 {
-	"name": "xsist10/psr-firephp-logger",
+    "name": "xsist10/psr-firephp-logger",
     "description": "Logging psr-3 compliant messages to FirePHP",
-    "keywords": ["psr-3", "firephp", "logging"],
+    "keywords": ["psr", "psr-3", "firephp", "log", "logging"],
     "license": "Apache-2.0",
     "authors": [
         {
